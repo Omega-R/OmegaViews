@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="OmegaTextView">
+        <attr name="startText" format="string" localization="suggested"/>
+        <attr name="endText" format="string" localization="suggested"/>
+        <attr name="startTextSize" format="dimension" />
+        <attr name="endTextSize" format="dimension" />
+
+        <attr name="startTextStyle" format="flags" >
+            <flag name="bold" value="1"/>
+            <flag name="italic" value="2"/>
+            <flag name="underline" value="4"/>
+            <flag name="strikethrough" value="8"/>
+        </attr>
+
+        <attr name="endTextStyle" format="flags" >
+            <flag name="none" value="0"/>
+            <flag name="bold" value="1"/>
+            <flag name="italic" value="2"/>
+            <flag name="underline" value="4"/>
+            <flag name="strikethrough" value="8"/>
+        </attr>
+
+        <attr name="startTextColor" format="color"/>
+        <attr name="endTextColor" format="color"/>
+        <attr name="startTextFont" format="string"/>
+        <attr name="endTextFont" format="string"/>
+
+    </declare-styleable>
+
+</resources>
