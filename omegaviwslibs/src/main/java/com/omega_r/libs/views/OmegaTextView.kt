@@ -36,9 +36,14 @@ open class OmegaTextView @JvmOverloads constructor(
     var endText: Text? = null
         set(value) {
             field = value
-            if (initData) {
-                updateAllText()
-            }
+            updateAllText()
+
+        }
+
+    var spaceText: Text? = null
+        set(value) {
+            field = value
+            updateAllText()
         }
 
     private val startTextStyle = Style()
@@ -83,6 +88,11 @@ open class OmegaTextView @JvmOverloads constructor(
                     R.styleable.OmegaTextView_endTextFont -> {
                         endTextStyle.fontFamily = a.getString(attr)
                     }
+                    R.styleable.OmegaTextView_includeTextSpace -> {
+                        if (a.getBoolean(attr, false)) {
+                            spaceText = Text.from(" ")
+                        }
+                    }
 
                 }
             }
@@ -103,8 +113,8 @@ open class OmegaTextView @JvmOverloads constructor(
 
     private fun updateAllText(force: Boolean = false) {
         if (initData || force) {
-            val allText = (startText + startTextStyle) + text + (endText + endTextStyle)
-            super.setText(allText?.getCharSequence(context), BufferType.SPANNABLE)
+            val allText = (startText + startTextStyle) + spaceText + text + spaceText + (endText + endTextStyle)
+            super.setText(allText?.getCharSequence(context), BufferType.NORMAL)
         }
     }
 

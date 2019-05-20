@@ -27,6 +27,8 @@
         <attr name="startTextFont" format="string"/>
         <attr name="endTextFont" format="string"/>
 
+        <attr name="includeTextSpace" format="boolean"/>
+
     </declare-styleable>
 
 </resources>

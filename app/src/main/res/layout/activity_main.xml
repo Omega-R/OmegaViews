@@ -18,6 +18,7 @@
             app:startTextFont="sans-serif-thin"
             app:endText="@string/app_name"
             app:endTextStyle="bold|underline"
+            app:includeTextSpace="true"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
