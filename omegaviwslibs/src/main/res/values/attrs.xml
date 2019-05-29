@@ -24,10 +24,11 @@
 
         <attr name="startTextColor" format="color"/>
         <attr name="endTextColor" format="color"/>
-        <attr name="startTextFont" format="string"/>
-        <attr name="endTextFont" format="string"/>
+        <attr name="startTextFontFamily" />
+        <attr name="endTextFontFamily" />
 
-        <attr name="includeTextSpace" format="boolean"/>
+        <attr name="startDelimiter" format="string" />
+        <attr name="endDelimiter" format="string" />
 
     </declare-styleable>
 
