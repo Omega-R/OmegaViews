@@ -1,8 +1,15 @@
 package com.omega_r.libs.views
 
+import android.annotation.SuppressLint
 import android.content.Context
+import android.content.res.Resources
+import android.content.res.TypedArray
+import android.graphics.Typeface
+import android.os.Build
 import android.util.AttributeSet
 import androidx.appcompat.widget.AppCompatTextView
+import androidx.appcompat.widget.TintTypedArray
+import androidx.core.content.res.ResourcesCompat
 import com.omega_r.libs.omegatypes.*
 
 
@@ -40,7 +47,13 @@ open class OmegaTextView @JvmOverloads constructor(
 
         }
 
-    var spaceText: Text? = null
+    var startSpaceText: Text? = null
+        set(value) {
+            field = value
+            updateAllText()
+        }
+
+    var endSpaceText: Text? = null
         set(value) {
             field = value
             updateAllText()
@@ -54,52 +67,78 @@ open class OmegaTextView @JvmOverloads constructor(
     init {
         initData = false
         if (attrs != null) {
-            val a = context.obtainStyledAttributes(attrs, R.styleable.OmegaTextView, defStyleAttr, 0)
-
-            for (i in 0 until a.indexCount) {
-                when (val attr = a.getIndex(i)) {
-                    R.styleable.OmegaTextView_startText -> {
-                        startText = a.getText(attr).toText()
-                    }
-                    R.styleable.OmegaTextView_endText -> {
-                        endText = a.getText(attr).toText()
-                    }
-                    R.styleable.OmegaTextView_startTextSize -> {
-                        startTextStyle.textSize = Size.from(a.getDimension(attr, 0f), Size.Unit.PX)
-                    }
-                    R.styleable.OmegaTextView_endTextSize -> {
-                        endTextStyle.textSize = Size.from(a.getDimension(attr, 0f), Size.Unit.PX)
-                    }
-                    R.styleable.OmegaTextView_startTextStyle -> {
-                        startTextStyle.style = a.getInt(attr, STYLE_NONE)
-                    }
-                    R.styleable.OmegaTextView_endTextStyle -> {
-                        endTextStyle.style = a.getInt(attr, STYLE_NONE)
-                    }
-                    R.styleable.OmegaTextView_startTextColor -> {
-                        startTextStyle.textColor = a.getColor(attr, startTextStyle.textColor)
-                    }
-                    R.styleable.OmegaTextView_endTextColor -> {
-                        endTextStyle.textColor = a.getColor(attr, endTextStyle.textColor)
-                    }
-                    R.styleable.OmegaTextView_startTextFont -> {
-                        startTextStyle.fontFamily = a.getString(attr)
-                    }
-                    R.styleable.OmegaTextView_endTextFont -> {
-                        endTextStyle.fontFamily = a.getString(attr)
-                    }
-                    R.styleable.OmegaTextView_includeTextSpace -> {
-                        if (a.getBoolean(attr, false)) {
-                            spaceText = Text.from(" ")
-                        }
-                    }
-
-                }
-            }
-            a.recycle()
+            initWithAttributes(context, attrs, defStyleAttr)
         }
         initData = true
         updateAllText()
+    }
+
+    @SuppressLint("RestrictedApi")
+    private fun initWithAttributes(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = android.R.attr.textViewStyle) {
+        val a = TintTypedArray.obtainStyledAttributes(context, attrs, R.styleable.OmegaTextView, defStyleAttr, 0)
+
+        for (i in 0 until a.indexCount) {
+            when (val attr = a.getIndex(i)) {
+                R.styleable.OmegaTextView_startText -> {
+                    startText = a.getText(attr).toText()
+                }
+                R.styleable.OmegaTextView_endText -> {
+                    endText = a.getText(attr).toText()
+                }
+                R.styleable.OmegaTextView_startTextSize -> {
+                    startTextStyle.textSize = Size.from(a.getDimension(attr, 0f), Size.Unit.PX)
+                }
+                R.styleable.OmegaTextView_endTextSize -> {
+                    endTextStyle.textSize = Size.from(a.getDimension(attr, 0f), Size.Unit.PX)
+                }
+                R.styleable.OmegaTextView_startTextStyle -> {
+                    startTextStyle.style = a.getInt(attr, STYLE_NONE)
+                }
+                R.styleable.OmegaTextView_endTextStyle -> {
+                    endTextStyle.style = a.getInt(attr, STYLE_NONE)
+                }
+                R.styleable.OmegaTextView_startTextColor -> {
+                    startTextStyle.textColor = a.getColor(attr, startTextStyle.textColor)
+                }
+                R.styleable.OmegaTextView_endTextColor -> {
+                    endTextStyle.textColor = a.getColor(attr, endTextStyle.textColor)
+                }
+                R.styleable.OmegaTextView_startTextFontFamily -> {
+                    obtainFont(intoStyle = startTextStyle, typedArray = a, attr = attr)
+                }
+                R.styleable.OmegaTextView_endTextFontFamily -> {
+                    obtainFont(intoStyle = endTextStyle, typedArray = a, attr = attr)
+                }
+                R.styleable.OmegaTextView_startDelimiter -> {
+                    a.getString(attr)?.let {
+                        startSpaceText = Text.from(it)
+                    }
+                }
+                R.styleable.OmegaTextView_endDelimiter -> {
+                    a.getString(attr)?.let {
+                        endSpaceText = Text.from(it)
+                    }
+                }
+
+            }
+        }
+        a.recycle()
+    }
+
+    @SuppressLint("RestrictedApi")
+    private fun obtainFont(intoStyle: Style, typedArray: TintTypedArray, attr: Int) {
+        if (!context.isRestricted) {
+            try {
+                intoStyle.fontTypeface = typedArray.getFont(attr, intoStyle.style, null)
+            } catch (e: UnsupportedOperationException) {
+                // Expected if it is not a font resource.
+            } catch (e: Resources.NotFoundException) {
+                // Expected if it is not a font resource.
+            }
+        }
+        if (intoStyle.fontTypeface == null) {
+            intoStyle.fontFamily = typedArray.getString(attr)
+        }
     }
 
     override fun getText(): CharSequence? {
@@ -113,7 +152,7 @@ open class OmegaTextView @JvmOverloads constructor(
 
     private fun updateAllText(force: Boolean = false) {
         if (initData || force) {
-            val allText = (startText + startTextStyle) + spaceText + text + spaceText + (endText + endTextStyle)
+            val allText = (startText + startTextStyle) + startSpaceText + text + endSpaceText + (endText + endTextStyle)
             super.setText(allText?.getCharSequence(context), BufferType.NORMAL)
         }
     }
@@ -144,6 +183,12 @@ open class OmegaTextView @JvmOverloads constructor(
                 updateAllText()
             }
 
+        var fontTypeface: Typeface? = null
+            set(value) {
+                field = value
+                updateAllText()
+            }
+
         fun createTextStyle(): TextStyle? {
             var result: TextStyle? = null
             textSize?.let {
@@ -167,6 +212,10 @@ open class OmegaTextView @JvmOverloads constructor(
 
             if (textColor != 0) {
                 result += TextStyle.color(textColor)
+            }
+
+            fontTypeface?.let {
+                result += TextStyle.font(it)
             }
 
             fontFamily?.let {
