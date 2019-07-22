@@ -3,15 +3,11 @@ package com.omega_r.libs.views
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.Resources
-import android.content.res.TypedArray
 import android.graphics.Typeface
-import android.os.Build
 import android.util.AttributeSet
-import androidx.appcompat.widget.AppCompatTextView
-import androidx.appcompat.widget.TintTypedArray
-import androidx.core.content.res.ResourcesCompat
 import com.omega_r.libs.omegatypes.*
-
+import android.support.v7.widget.AppCompatTextView
+import android.support.v7.widget.TintTypedArray
 
 /**
  * Created by Anton Knyazev on 18.05.2019.
