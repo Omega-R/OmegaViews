@@ -29,7 +29,7 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation"org.jetbrains.kotlin:kotlin-stdlib-jdk7:$rootProject.kotlin_version"
-    implementation 'com.github.Omega-R.OmegaTypes:omegatypes:1.0.0'
+    implementation 'com.github.Omega-R.OmegaTypes:omegatypes:55932de'
 
     implementation "com.android.support:appcompat-v7:$rootProject.supportLibraryVersion"
 

@@ -56,6 +56,7 @@ open class OmegaTextView @JvmOverloads constructor(
         }
 
     private val startTextStyle = Style()
+    private var textStyle: TextStyle? = null
     private val endTextStyle = Style()
 
     private var initData: Boolean = true
@@ -66,6 +67,7 @@ open class OmegaTextView @JvmOverloads constructor(
             initWithAttributes(context, attrs, defStyleAttr)
         }
         initData = true
+        removeTextStyleIfNeeded()
         updateAllText()
     }
 
@@ -121,6 +123,36 @@ open class OmegaTextView @JvmOverloads constructor(
         a.recycle()
     }
 
+    private fun removeTextStyleIfNeeded() {
+        val typefaceStyle = typeface?.style ?: return
+        if (typefaceStyle == Typeface.NORMAL) return
+        if (!isStyleEqual(startTextStyle.style, typefaceStyle) || !isStyleEqual(endTextStyle.style, typefaceStyle)) {
+            getTextStyle(typefaceStyle)?.let {
+                textStyle = it
+                setTypeface(null, Typeface.NORMAL)
+            }
+        }
+    }
+
+    private fun isStyleEqual(style: Int, typefaceStyle: Int): Boolean {
+        val convertedStyle = when (style) {
+            STYLE_BOLD -> Typeface.BOLD
+            STYLE_ITALIC -> Typeface.ITALIC
+            else -> null
+        } ?: return true
+
+        return convertedStyle == typefaceStyle
+    }
+
+    private fun getTextStyle(typefaceStyle: Int): TextStyle? {
+        return when (typefaceStyle) {
+            Typeface.NORMAL -> TextStyle.normal()
+            Typeface.BOLD -> TextStyle.bold()
+            Typeface.ITALIC -> TextStyle.italic()
+            else -> null
+        }
+    }
+
     @SuppressLint("RestrictedApi")
     private fun obtainFont(intoStyle: Style, typedArray: TintTypedArray, attr: Int) {
         if (!context.isRestricted) {
@@ -148,7 +180,8 @@ open class OmegaTextView @JvmOverloads constructor(
 
     private fun updateAllText(force: Boolean = false) {
         if (initData || force) {
-            val allText = (startText + startTextStyle) + startSpaceText + text + endSpaceText + (endText + endTextStyle)
+            val middle = if (textStyle == null) text else (text + textStyle)
+            val allText = (startText + startTextStyle) + startSpaceText + middle + endSpaceText + (endText + endTextStyle)
             super.setText(allText?.getCharSequence(context), BufferType.NORMAL)
         }
     }
@@ -207,7 +240,7 @@ open class OmegaTextView @JvmOverloads constructor(
             }
 
             if (textColor != 0) {
-                result += TextStyle.color(textColor)
+                result += TextStyle.colorFromInt(textColor)
             }
 
             fontTypeface?.let {

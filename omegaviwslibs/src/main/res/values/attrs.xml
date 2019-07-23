@@ -8,6 +8,7 @@
         <attr name="endTextSize" format="dimension" />
 
         <attr name="startTextStyle" format="flags" >
+            <flag name="none" value="0"/>
             <flag name="bold" value="1"/>
             <flag name="italic" value="2"/>
             <flag name="underline" value="4"/>
