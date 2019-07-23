@@ -136,6 +136,7 @@ open class OmegaTextView @JvmOverloads constructor(
 
     private fun isStyleEqual(style: Int, typefaceStyle: Int): Boolean {
         val convertedStyle = when (style) {
+            STYLE_NONE -> Typeface.NORMAL
             STYLE_BOLD -> Typeface.BOLD
             STYLE_ITALIC -> Typeface.ITALIC
             else -> null
