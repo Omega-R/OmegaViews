@@ -70,37 +70,43 @@ open class OmegaTextView @JvmOverloads constructor(
         updateAllText()
     }
 
-    private fun initWithAttributes(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = android.R.attr.textViewStyle) {
+    private fun initWithAttributes(
+        context: Context,
+        attrs: AttributeSet? = null,
+        defStyleAttr: Int = android.R.attr.textViewStyle
+    ) {
         initWithAttributes(obtainStyledAttributes(context, attrs, R.styleable.OmegaTextView, defStyleAttr, 0))
     }
 
     private fun initWithAttributes(a: TintTypedArray) {
+        if (a.hasValue(R.styleable.OmegaTextView_startTextAppearance)) {
+            updateTextAppearance(
+                a.getResourceId(R.styleable.OmegaTextView_startTextAppearance, -1),
+                startTextStyle
+            )
+        }
+        if (a.hasValue(R.styleable.OmegaTextView_middleTextAppearance)) {
+            updateTextAppearance(
+                a.getResourceId(R.styleable.OmegaTextView_middleTextAppearance, -1),
+                middleTextStyle
+            )
+        }
+        if (a.hasValue(R.styleable.OmegaTextView_endTextAppearance)) {
+            updateTextAppearance(
+                a.getResourceId(R.styleable.OmegaTextView_endTextAppearance, -1),
+                endTextStyle
+            )
+        }
         for (i in 0 until a.indexCount) {
             when (val attr = a.getIndex(i)) {
-                R.styleable.OmegaTextView_startText -> {
-                    startText = a.getText(attr).toText()
-                }
-                R.styleable.OmegaTextView_endText -> {
-                    endText = a.getText(attr).toText()
-                }
-                R.styleable.OmegaTextView_startTextSize -> {
-                    startTextStyle.textSize = Size.from(a.getDimension(attr, 0f), Size.Unit.PX)
-                }
-                R.styleable.OmegaTextView_middleTextSize -> {
-                    middleTextStyle.textSize = Size.from(a.getDimension(attr, 0f), Size.Unit.PX)
-                }
-                R.styleable.OmegaTextView_endTextSize -> {
-                    endTextStyle.textSize = Size.from(a.getDimension(attr, 0f), Size.Unit.PX)
-                }
-                R.styleable.OmegaTextView_startTextStyle -> {
-                    startTextStyle.style = a.getInt(attr, STYLE_NONE)
-                }
-                R.styleable.OmegaTextView_middleTextStyle -> {
-                    middleTextStyle.style = a.getInt(attr, STYLE_NONE)
-                }
-                R.styleable.OmegaTextView_endTextStyle -> {
-                    endTextStyle.style = a.getInt(attr, STYLE_NONE)
-                }
+                R.styleable.OmegaTextView_startText -> startText = a.getText(attr).toText()
+                R.styleable.OmegaTextView_endText -> endText = a.getText(attr).toText()
+                R.styleable.OmegaTextView_startTextSize -> startTextStyle.textSize = a.getSize(attr)
+                R.styleable.OmegaTextView_middleTextSize -> middleTextStyle.textSize = a.getSize(attr)
+                R.styleable.OmegaTextView_endTextSize -> endTextStyle.textSize = a.getSize(attr)
+                R.styleable.OmegaTextView_startTextStyle -> startTextStyle.style = a.getStyle(attr)
+                R.styleable.OmegaTextView_middleTextStyle -> middleTextStyle.style = a.getStyle(attr)
+                R.styleable.OmegaTextView_endTextStyle -> endTextStyle.style = a.getStyle(attr)
                 R.styleable.OmegaTextView_startTextColor -> {
                     startTextStyle.textColor = a.getColor(attr, startTextStyle.textColor)
                 }
@@ -110,26 +116,30 @@ open class OmegaTextView @JvmOverloads constructor(
                 R.styleable.OmegaTextView_endTextColor -> {
                     endTextStyle.textColor = a.getColor(attr, endTextStyle.textColor)
                 }
-                R.styleable.OmegaTextView_startTextFontFamily -> {
-                    obtainFont(intoStyle = startTextStyle, typedArray = a, attr = attr)
-                }
-                R.styleable.OmegaTextView_middleTextFontFamily -> {
-                    obtainFont(intoStyle = middleTextStyle, typedArray = a, attr = attr)
-                }
-                R.styleable.OmegaTextView_endTextFontFamily -> {
-                    obtainFont(intoStyle = endTextStyle, typedArray = a, attr = attr)
-                }
+                R.styleable.OmegaTextView_startTextFontFamily -> obtainFont(startTextStyle, a, attr)
+                R.styleable.OmegaTextView_middleTextFontFamily -> obtainFont(middleTextStyle, a, attr)
+                R.styleable.OmegaTextView_endTextFontFamily -> obtainFont(endTextStyle, a, attr)
                 R.styleable.OmegaTextView_startDelimiter -> {
-                    a.getString(attr)?.let {
-                        startSpaceText = Text.from(it)
-                    }
+                    a.getString(attr)?.let { startSpaceText = Text.from(it) }
                 }
                 R.styleable.OmegaTextView_endDelimiter -> {
-                    a.getString(attr)?.let {
-                        endSpaceText = Text.from(it)
-                    }
+                    a.getString(attr)?.let { endSpaceText = Text.from(it) }
                 }
+            }
+        }
+        a.recycle()
+    }
 
+    @SuppressLint("PrivateResource")
+    private fun updateTextAppearance(resId: Int, style: Style) {
+        if (resId == -1) return
+        val a = obtainStyledAttributes(context, resId, R.styleable.TextAppearance)
+        for (i in 0 until a.indexCount) {
+            when (val attr = a.getIndex(i)) {
+                R.styleable.TextAppearance_android_textColor -> style.textColor = a.getColor(attr, style.textColor)
+                R.styleable.TextAppearance_android_textSize -> style.textSize = a.getSize(attr)
+                R.styleable.TextAppearance_android_fontFamily -> obtainFont(style, a, attr)
+                R.styleable.TextAppearance_android_textStyle -> style.fontTypeface = getFontTypeface(style, a, attr)
             }
         }
         a.recycle()
@@ -138,16 +148,22 @@ open class OmegaTextView @JvmOverloads constructor(
     @SuppressLint("RestrictedApi")
     private fun obtainFont(intoStyle: Style, typedArray: TintTypedArray, attr: Int) {
         if (!context.isRestricted) {
-            try {
-                intoStyle.fontTypeface = typedArray.getFont(attr, intoStyle.style, null)
-            } catch (e: UnsupportedOperationException) {
-                // Expected if it is not a font resource.
-            } catch (e: Resources.NotFoundException) {
-                // Expected if it is not a font resource.
-            }
+            intoStyle.fontTypeface = getFontTypeface(intoStyle, typedArray, attr)
         }
         if (intoStyle.fontTypeface == null) {
             intoStyle.fontFamily = typedArray.getString(attr)
+        }
+    }
+
+    private fun getFontTypeface(intoStyle: Style, typedArray: TintTypedArray, attr: Int): Typeface? {
+        return try {
+            typedArray.getFont(attr, intoStyle.style, null)
+        } catch (e: UnsupportedOperationException) {
+            // Expected if it is not a font resource.
+            null
+        } catch (e: Resources.NotFoundException) {
+            // Expected if it is not a font resource.
+            null
         }
     }
 
@@ -162,15 +178,15 @@ open class OmegaTextView @JvmOverloads constructor(
 
     override fun setTextAppearance(context: Context, resId: Int) {
         super.setTextAppearance(context, resId)
-        updateTextAppearance(resId)
+        invalidateTextAppearance(resId)
     }
 
     override fun setTextAppearance(resId: Int) {
         super.setTextAppearance(resId)
-        updateTextAppearance(resId)
+        invalidateTextAppearance(resId)
     }
 
-    private fun updateTextAppearance(resId: Int) {
+    private fun invalidateTextAppearance(resId: Int) {
         initData = false
         initWithAttributes(obtainStyledAttributes(context, resId, R.styleable.OmegaTextView))
         initData = true
@@ -273,5 +289,9 @@ open class OmegaTextView @JvmOverloads constructor(
     private operator fun Text?.plus(style: Style): Text? {
         return this + style.createTextStyle()
     }
+
+    private fun TintTypedArray.getSize(attr: Int) = Size.from(getDimension(attr, 0f), Size.Unit.PX)
+
+    private fun TintTypedArray.getStyle(attr: Int) = getInt(attr, STYLE_NONE)
 
 }
