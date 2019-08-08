@@ -3,19 +3,17 @@ package com.omega_r.libs.views
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.Resources
-import android.content.res.TypedArray
 import android.graphics.Typeface
-import android.os.Build
 import android.util.AttributeSet
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.appcompat.widget.TintTypedArray
-import androidx.core.content.res.ResourcesCompat
+import androidx.appcompat.widget.TintTypedArray.obtainStyledAttributes
 import com.omega_r.libs.omegatypes.*
-
 
 /**
  * Created by Anton Knyazev on 18.05.2019.
  */
+@SuppressLint("RestrictedApi")
 open class OmegaTextView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = android.R.attr.textViewStyle
 ) : AppCompatTextView(context, attrs, defStyleAttr) {
@@ -66,17 +64,16 @@ open class OmegaTextView @JvmOverloads constructor(
 
     init {
         initData = false
-        if (attrs != null) {
-            initWithAttributes(context, attrs, defStyleAttr)
-        }
+        if (attrs != null) initWithAttributes(context, attrs, defStyleAttr)
         initData = true
         updateAllText()
     }
 
-    @SuppressLint("RestrictedApi")
     private fun initWithAttributes(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = android.R.attr.textViewStyle) {
-        val a = TintTypedArray.obtainStyledAttributes(context, attrs, R.styleable.OmegaTextView, defStyleAttr, 0)
+        initWithAttributes(obtainStyledAttributes(context, attrs, R.styleable.OmegaTextView, defStyleAttr, 0))
+    }
 
+    private fun initWithAttributes(a: TintTypedArray) {
         for (i in 0 until a.indexCount) {
             when (val attr = a.getIndex(i)) {
                 R.styleable.OmegaTextView_startText -> {
@@ -148,6 +145,23 @@ open class OmegaTextView @JvmOverloads constructor(
 
     override fun setText(text: CharSequence?, type: BufferType?) {
         this.text = text?.toText()
+    }
+
+    override fun setTextAppearance(context: Context, resId: Int) {
+        super.setTextAppearance(context, resId)
+        updateTextAppearance(resId)
+    }
+
+    override fun setTextAppearance(resId: Int) {
+        super.setTextAppearance(resId)
+        updateTextAppearance(resId)
+    }
+
+    private fun updateTextAppearance(resId: Int) {
+        initData = false
+        initWithAttributes(obtainStyledAttributes(context, resId, R.styleable.OmegaTextView))
+        initData = true
+        updateAllText()
     }
 
     private fun updateAllText(force: Boolean = false) {
