@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <declare-styleable name="styles">
+        <attr name="omegaCircleImageViewStyle" format="reference"/>
+    </declare-styleable>
+
     <declare-styleable name="OmegaTextView">
         <attr name="startText" format="string" localization="suggested"/>
         <attr name="endText" format="string" localization="suggested"/>
