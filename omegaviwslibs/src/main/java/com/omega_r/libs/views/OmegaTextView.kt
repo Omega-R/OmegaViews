@@ -3,15 +3,11 @@ package com.omega_r.libs.views
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.Resources
-import android.content.res.TypedArray
 import android.graphics.Typeface
-import android.os.Build
 import android.util.AttributeSet
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.appcompat.widget.TintTypedArray
-import androidx.core.content.res.ResourcesCompat
 import com.omega_r.libs.omegatypes.*
-
 
 /**
  * Created by Anton Knyazev on 18.05.2019.
@@ -60,6 +56,7 @@ open class OmegaTextView @JvmOverloads constructor(
         }
 
     private val startTextStyle = Style()
+    private val middleTextStyle = Style()
     private val endTextStyle = Style()
 
     private var initData: Boolean = true
@@ -74,7 +71,11 @@ open class OmegaTextView @JvmOverloads constructor(
     }
 
     @SuppressLint("RestrictedApi")
-    private fun initWithAttributes(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = android.R.attr.textViewStyle) {
+    private fun initWithAttributes(
+        context: Context,
+        attrs: AttributeSet? = null,
+        defStyleAttr: Int = android.R.attr.textViewStyle
+    ) {
         val a = TintTypedArray.obtainStyledAttributes(context, attrs, R.styleable.OmegaTextView, defStyleAttr, 0)
 
         for (i in 0 until a.indexCount) {
@@ -88,11 +89,17 @@ open class OmegaTextView @JvmOverloads constructor(
                 R.styleable.OmegaTextView_startTextSize -> {
                     startTextStyle.textSize = Size.from(a.getDimension(attr, 0f), Size.Unit.PX)
                 }
+                R.styleable.OmegaTextView_middleTextSize -> {
+                    middleTextStyle.textSize = Size.from(a.getDimension(attr, 0f), Size.Unit.PX)
+                }
                 R.styleable.OmegaTextView_endTextSize -> {
                     endTextStyle.textSize = Size.from(a.getDimension(attr, 0f), Size.Unit.PX)
                 }
                 R.styleable.OmegaTextView_startTextStyle -> {
                     startTextStyle.style = a.getInt(attr, STYLE_NONE)
+                }
+                R.styleable.OmegaTextView_middleTextStyle -> {
+                    middleTextStyle.style = a.getInt(attr, STYLE_NONE)
                 }
                 R.styleable.OmegaTextView_endTextStyle -> {
                     endTextStyle.style = a.getInt(attr, STYLE_NONE)
@@ -100,11 +107,17 @@ open class OmegaTextView @JvmOverloads constructor(
                 R.styleable.OmegaTextView_startTextColor -> {
                     startTextStyle.textColor = a.getColor(attr, startTextStyle.textColor)
                 }
+                R.styleable.OmegaTextView_middleTextColor -> {
+                    middleTextStyle.textColor = a.getColor(attr, middleTextStyle.textColor)
+                }
                 R.styleable.OmegaTextView_endTextColor -> {
                     endTextStyle.textColor = a.getColor(attr, endTextStyle.textColor)
                 }
                 R.styleable.OmegaTextView_startTextFontFamily -> {
                     obtainFont(intoStyle = startTextStyle, typedArray = a, attr = attr)
+                }
+                R.styleable.OmegaTextView_middleTextFontFamily -> {
+                    obtainFont(intoStyle = middleTextStyle, typedArray = a, attr = attr)
                 }
                 R.styleable.OmegaTextView_endTextFontFamily -> {
                     obtainFont(intoStyle = endTextStyle, typedArray = a, attr = attr)
@@ -152,7 +165,11 @@ open class OmegaTextView @JvmOverloads constructor(
 
     private fun updateAllText(force: Boolean = false) {
         if (initData || force) {
-            val allText = (startText + startTextStyle) + startSpaceText + text + endSpaceText + (endText + endTextStyle)
+            val allText = (startText + startTextStyle) +
+                    startSpaceText +
+                    (text + middleTextStyle) +
+                    endSpaceText +
+                    (endText + endTextStyle)
             super.setText(allText?.getCharSequence(context), BufferType.NORMAL)
         }
     }
@@ -211,7 +228,7 @@ open class OmegaTextView @JvmOverloads constructor(
             }
 
             if (textColor != 0) {
-                result += TextStyle.color(textColor)
+                result += TextStyle.color(Color.fromInt(textColor))
             }
 
             fontTypeface?.let {
