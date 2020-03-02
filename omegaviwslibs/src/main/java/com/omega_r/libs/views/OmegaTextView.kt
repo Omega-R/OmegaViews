@@ -228,7 +228,7 @@ open class OmegaTextView @JvmOverloads constructor(
             }
 
             if (textColor != 0) {
-                result += TextStyle.color(textColor)
+                result += TextStyle.color(Color.fromInt(textColor))
             }
 
             fontTypeface?.let {

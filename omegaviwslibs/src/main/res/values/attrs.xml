@@ -32,9 +32,9 @@
         <attr name="startTextColor" format="color"/>
         <attr name="middleTextColor" format="color"/>
         <attr name="endTextColor" format="color"/>
-        <attr name="startTextFontFamily"/>
-        <attr name="middleTextFontFamily"/>
-        <attr name="endTextFontFamily"/>
+        <attr name="startTextFontFamily" format="string|reference"/>
+        <attr name="middleTextFontFamily" format="string|reference"/>
+        <attr name="endTextFontFamily" format="string|reference"/>
 
         <attr name="startDelimiter" format="string"/>
         <attr name="endDelimiter" format="string"/>
