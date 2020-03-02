@@ -43,6 +43,10 @@
         <attr name="startDelimiter" format="string"/>
         <attr name="endDelimiter" format="string"/>
 
+        <attr name="startTextAppearance" format="reference"/>
+        <attr name="middleTextAppearance" format="reference"/>
+        <attr name="endTextAppearance" format="reference"/>
+
     </declare-styleable>
 
 </resources>
